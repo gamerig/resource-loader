@@ -1,9 +1,6 @@
-import { IEngine } from '../../engine/Engine';
-import { IMessageBus } from '../../messaging/MessageBus';
 import { AsyncQueue } from '../base/AsyncQueue';
 import { parseUri } from '../base/parseUri';
 import { Signal } from '../base/Signal';
-import { LoaderEvent } from '.';
 import { MAX_PROGRESS, rgxExtractUrlHash } from './constants';
 import { LoaderMiddleware, LoaderPlugin } from './LoaderPlugin';
 import { LoaderResource, ResourceMetadata } from './LoaderResource';
@@ -52,11 +49,7 @@ class Loader {
   private _onStartSignal: Signal<Loader.OnStartSignal>;
   private _onCompleteSignal: Signal<Loader.OnCompleteSignal>;
 
-  private readonly _events: IMessageBus;
-
-  constructor(private readonly _engine: IEngine, options?: LoaderOptions) {
-    this._events = this._engine.messaging;
-
+  constructor(options?: LoaderOptions) {
     this._baseUrl = options?.baseUrl || '';
 
     this._beforeMiddleware = [];
@@ -355,8 +348,6 @@ class Loader {
     this._loading = true;
 
     this._onStartSignal.dispatch(this);
-
-    this._events.publish(LoaderEvent.Started, this);
   }
 
   /**
@@ -367,8 +358,6 @@ class Loader {
     this._loading = false;
 
     this._onCompleteSignal.dispatch(this, this._resources);
-
-    this._events.publish(LoaderEvent.Complete, this, this._resources);
   }
 
   /**
@@ -394,14 +383,11 @@ class Loader {
         this._progress = Math.min(MAX_PROGRESS, this._progress + resource.progressChunk);
 
         this._onProgressSignal.dispatch(this, resource);
-        this._events.publish(LoaderEvent.Progress, this, resource);
 
         if (resource.error) {
           this._onErrorSignal.dispatch(resource.error, this, resource);
-          this._events.publish(LoaderEvent.Failed, this, resource);
         } else {
           this._onLoadSignal.dispatch(this, resource);
-          this._events.publish(LoaderEvent.Loaded, this, resource);
         }
 
         this._resourcesParsing.splice(this._resourcesParsing.indexOf(resource), 1);

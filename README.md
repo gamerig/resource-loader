@@ -1,3 +1,3 @@
-# @gamerig/rendering-threejs
+# @gamerig/resource-loader
 
-A gamerig module built around three.js
+Gamerig resource loading integration inspired by Pixijs's loader

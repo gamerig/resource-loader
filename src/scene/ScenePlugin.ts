@@ -1,9 +1,8 @@
-import { IEngine } from '../engine/Engine';
-import { EventListener, IMessageBus } from '../messaging/MessageBus';
-import { Scene } from '../scene/Scene';
-import { SceneEvent } from '../scene/SceneEvent';
-import { Loader } from './loader/Loader';
-import { RESOURCE_CACHE_PROVIDER, ResourceCache } from './ResourceCache';
+import { EventListener, IEngine, IMessageBus, Scene, SceneEvent } from '@gamerig/core';
+
+import { RESOURCE_CACHE_PROVIDER } from '../constants';
+import { ResourceCache } from '../ResourceCache';
+import { SceneLoader } from './SceneLoader';
 
 export class ScenePlugin {
   private _events: IMessageBus;
@@ -15,7 +14,7 @@ export class ScenePlugin {
 
     this._sceneListeners.push(
       this._events.subscribe(SceneEvent.Init, (scene: Scene): void => {
-        const loader = new Loader(this._engine, {
+        const loader = new SceneLoader(this._engine, {
           baseUrl: '',
           concurrency: 10,
         });

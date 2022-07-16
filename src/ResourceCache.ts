@@ -1,7 +1,5 @@
 import { LoaderResource } from './loader/LoaderResource';
 
-export const RESOURCE_CACHE_PROVIDER = 'gamerig.core.resource.cache';
-
 export class ResourceCache {
   private _cache: { [key: string]: LoaderResource } = {};
 
@@ -32,3 +30,5 @@ export class ResourceCache {
     this._cache = {};
   }
 }
+
+export const GlobalResourceCache = new ResourceCache();
