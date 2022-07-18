@@ -1,9 +1,9 @@
-import { IEngine } from '@gamerig/core';
+import { Engine } from '@gamerig/core';
 
 import { Loader, LoaderEvent, LoaderOptions } from '../loader';
 
 export class SceneLoader extends Loader {
-  constructor(engine: IEngine, options?: LoaderOptions) {
+  constructor(engine: Engine, options?: LoaderOptions) {
     super(options);
 
     this.onStart((loader) => {

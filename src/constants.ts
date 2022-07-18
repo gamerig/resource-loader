@@ -1,1 +1,1 @@
-export const RESOURCE_CACHE_PROVIDER = 'gamerig.core.resource.cache';
+export const RESOURCE_CACHE_PROVIDER = 'gamerig.resource-loader.provider.resourceCache';

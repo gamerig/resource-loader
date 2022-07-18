@@ -1,4 +1,4 @@
-import { IEngine, Module } from '@gamerig/core';
+import { Engine, Module } from '@gamerig/core';
 
 import { RESOURCE_CACHE_PROVIDER } from './constants';
 import { Loader } from './loader/Loader';
@@ -8,19 +8,19 @@ import { GlobalResourceCache } from './ResourceCache';
 import { ScenePlugin } from './scene';
 
 export class ResourceModule implements Module {
-  private _scenePlugin!: ScenePlugin;
+  private scenePlugin: ScenePlugin;
 
-  init(engine: IEngine): void {
-    engine.addProvider({ key: RESOURCE_CACHE_PROVIDER, useValue: GlobalResourceCache });
+  init(engine: Engine): void {
+    engine.registerProvider({ key: RESOURCE_CACHE_PROVIDER, useValue: GlobalResourceCache });
 
     Loader.registerPlugin({ pre: caching(GlobalResourceCache) });
     Loader.registerPlugin({ use: parsing });
 
-    this._scenePlugin = new ScenePlugin(engine);
+    this.scenePlugin = new ScenePlugin(engine, GlobalResourceCache);
   }
 
   destroy(): void {
-    this._scenePlugin.destroy();
+    this.scenePlugin.destroy();
     GlobalResourceCache.clear();
   }
 }

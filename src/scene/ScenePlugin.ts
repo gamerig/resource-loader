@@ -1,52 +1,50 @@
-import { EventListener, IEngine, IMessageBus, Scene, SceneEvent } from '@gamerig/core';
+import { Engine, EventListener, MessageBus, Scene, SceneEvent } from '@gamerig/core';
 
-import { RESOURCE_CACHE_PROVIDER } from '../constants';
 import { ResourceCache } from '../ResourceCache';
 import { SceneLoader } from './SceneLoader';
 
 export class ScenePlugin {
-  private _events: IMessageBus;
-  private _sceneListeners: EventListener[] = [];
+  private events: MessageBus;
+  private sceneListeners: EventListener[] = [];
 
-  constructor(private readonly _engine: IEngine) {
-    this._events = this._engine.messaging;
-    const resources = this._engine.resolve<ResourceCache>(RESOURCE_CACHE_PROVIDER);
+  constructor(readonly engine: Engine, readonly resources: ResourceCache) {
+    this.events = this.engine.messaging;
 
-    this._sceneListeners.push(
-      this._events.subscribe(SceneEvent.Init, (scene: Scene): void => {
-        const loader = new SceneLoader(this._engine, {
+    this.sceneListeners.push(
+      this.events.subscribe(SceneEvent.Init, (scene: Scene): void => {
+        const loader = new SceneLoader(this.engine, {
           baseUrl: '',
           concurrency: 10,
         });
 
         Object.defineProperties(scene, {
           loader: { value: loader, writable: false },
-          resources: { value: resources, writable: false },
+          resources: { value: this.resources.cache, writable: false },
         });
       }),
     );
 
-    this._sceneListeners.push(
-      this._events.subscribe(SceneEvent.Loading, (scene: Scene): void => {
+    this.sceneListeners.push(
+      this.events.subscribe(SceneEvent.Loading, (scene: Scene): void => {
         scene.loader.start();
       }),
     );
 
-    this._sceneListeners.push(
-      this._events.subscribe(SceneEvent.Stopped, (scene: Scene): void => {
+    this.sceneListeners.push(
+      this.events.subscribe(SceneEvent.Stopped, (scene: Scene): void => {
         scene.loader.reset();
       }),
     );
 
-    this._sceneListeners.push(
-      this._events.subscribe(SceneEvent.Destroyed, (scene: Scene): void => {
+    this.sceneListeners.push(
+      this.events.subscribe(SceneEvent.Destroyed, (scene: Scene): void => {
         scene.loader.destroy();
       }),
     );
   }
 
   destroy(): void {
-    this._sceneListeners.forEach((listener) => listener.off());
-    this._sceneListeners = [];
+    this.sceneListeners.forEach((listener) => listener.off());
+    this.sceneListeners = [];
   }
 }

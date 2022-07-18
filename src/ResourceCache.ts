@@ -1,27 +1,27 @@
 import { LoaderResource } from './loader/LoaderResource';
 
-export class ResourceCache {
-  private _cache: { [key: string]: LoaderResource } = {};
+class ResourceCache {
+  private _cache: { [name: string]: LoaderResource } = {};
 
-  add(key: string, resource: LoaderResource): void {
-    this._cache[key] = resource;
+  add(name: string, resource: LoaderResource): void {
+    this._cache[name] = resource;
   }
 
-  has(key: string): boolean {
-    return key in this._cache;
+  has(name: string): boolean {
+    return name in this._cache;
   }
 
-  get(key: string): LoaderResource | undefined {
-    return this._cache[key];
+  get(name: string): LoaderResource | undefined {
+    return this._cache[name];
   }
 
   remove(resource: string | LoaderResource): void {
     if (typeof resource === 'string') {
       delete this._cache[resource];
     } else {
-      const key = Object.keys(this._cache).find((key) => this._cache[key] === resource);
-      if (key) {
-        delete this._cache[key];
+      const name = Object.keys(this._cache).find((name) => this._cache[name] === resource);
+      if (name) {
+        delete this._cache[name];
       }
     }
   }
@@ -29,6 +29,12 @@ export class ResourceCache {
   clear(): void {
     this._cache = {};
   }
+
+  get cache() {
+    return this._cache;
+  }
 }
 
-export const GlobalResourceCache = new ResourceCache();
+const GlobalResourceCache = new ResourceCache();
+
+export { GlobalResourceCache, ResourceCache };
